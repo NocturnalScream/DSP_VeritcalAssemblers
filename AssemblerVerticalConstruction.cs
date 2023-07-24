@@ -118,11 +118,15 @@ namespace AssemblerVerticalConstruction
                         int num3;
                         int num4;
                         int num5 = num;
-                        _this.factory.ReadObjectConn(num, 15, out flag, out num3, out num4);                        
-                        int upperEntity = num3;
-                        _this.factory.ReadObjectConn(num, 14, out flag, out num3, out num4); 
+                        int upperEntity = 0;
+                        _this.factory.ReadObjectConn(num, 15, out flag, out num3, out num4);
+			            if (flag && num3 != 0 && num4 == 14)
+			            {
+				            upperEntity = num3;
+			            }
+                        _this.factory.ReadObjectConn(num5, 14, out flag, out num3, out num4); 
 
-                        if (num > 0 && num3 == 0 && upperEntity != 0) //check if assembler is the lowest one of a stack by checking bottom and top connections
+                        if (flag && num3 != 0 && num4 == 15 && upperEntity != 0) //check if assembler is the lowest one of a stack by checking bottom and top connections
                         {
                             assemblerComponentEx.assemblerStacks[i][assemblerId] = new();
                             assemblerComponentEx.assemblerStacks[i][assemblerId].Add(_this.factory.entityPool[upperEntity].assemblerId);
@@ -290,19 +294,6 @@ namespace AssemblerVerticalConstruction
             return true;
         }
 
-        [HarmonyPrefix, HarmonyPatch(typeof(PlanetFactory), nameof(PlanetFactory.CreateEntityLogicComponents))]
-        public static void CreateEntityLogicComponentsPatch(PlanetFactory __instance)
-        {
-            if (!assemblerComponentEx.assemblerStacks.ContainsKey(__instance.index))
-            {
-                assemblerComponentEx.assemblerStacks[__instance.index] = new();
-            } 
-/*             if (assemblerComponentEx.assemblerStackMembers.Length < __instance.index)
-            {
-                assemblerComponentEx.assemblerStackMembers[__instance.index] = new int[64*6];
-            } */
-        }
-       
     [HarmonyTranspiler]
     [HarmonyPatch(typeof(FactorySystem), nameof(FactorySystem.GameTick), typeof(long), typeof(bool), typeof(int), typeof(int), typeof(int))]
     [HarmonyPatch(typeof(FactorySystem), nameof(FactorySystem.GameTick), typeof(long), typeof(bool))]

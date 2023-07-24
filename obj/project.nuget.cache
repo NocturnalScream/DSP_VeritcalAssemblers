@@ -1,0 +1,18 @@
+{
+  "version": 2,
+  "dgSpecHash": "bpqd5V1qDggIKgc9oVQu7EBLaivbUV6Xx5OgJtnCHZuF+EcyUcndw4ghIAnynsPJX49/qPRqZmFb/PnZFnYqFA==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\Alex\\Documents\\DSPmodScaffold\\AssemblerVerticalConstruction.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Alex\\.nuget\\packages\\bepinex.baselib\\5.4.16\\bepinex.baselib.5.4.16.nupkg.sha512",
+    "C:\\Users\\Alex\\.nuget\\packages\\bepinex.core\\5.4.16\\bepinex.core.5.4.16.nupkg.sha512",
+    "C:\\Users\\Alex\\.nuget\\packages\\dysonsphereprogram.gamelibs\\0.9.27.15466-r.0\\dysonsphereprogram.gamelibs.0.9.27.15466-r.0.nupkg.sha512",
+    "C:\\Users\\Alex\\.nuget\\packages\\harmonyx\\2.5.5\\harmonyx.2.5.5.nupkg.sha512",
+    "C:\\Users\\Alex\\.nuget\\packages\\mono.cecil\\0.11.4\\mono.cecil.0.11.4.nupkg.sha512",
+    "C:\\Users\\Alex\\.nuget\\packages\\monomod.runtimedetour\\21.8.19.1\\monomod.runtimedetour.21.8.19.1.nupkg.sha512",
+    "C:\\Users\\Alex\\.nuget\\packages\\monomod.utils\\21.8.19.1\\monomod.utils.21.8.19.1.nupkg.sha512",
+    "C:\\Users\\Alex\\.nuget\\packages\\system.numerics.vectors\\4.5.0\\system.numerics.vectors.4.5.0.nupkg.sha512",
+    "C:\\Users\\Alex\\.nuget\\packages\\unityengine.modules\\2018.4.12\\unityengine.modules.2018.4.12.nupkg.sha512"
+  ],
+  "logs": []
+}
