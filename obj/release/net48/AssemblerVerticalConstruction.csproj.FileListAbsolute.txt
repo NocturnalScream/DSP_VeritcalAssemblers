@@ -7,3 +7,17 @@ C:\Users\Alex\Documents\DSPmodScaffold\obj\release\net48\AssemblerVerticalConstr
 C:\Users\Alex\Documents\DSPmodScaffold\obj\release\net48\AssemblerVerticalConstruction.csproj.CoreCompileInputs.cache
 C:\Users\Alex\Documents\DSPmodScaffold\obj\release\net48\AssemblerVerticalConstruction.dll
 C:\Users\Alex\Documents\DSPmodScaffold\obj\release\net48\AssemblerVerticalConstruction.pdb
+C:\Users\Alex\Documents\GitHubextern\DSP_VeritcalAssemblers\bin\Release\net48\AssemblerVerticalConstruction.dll.config
+C:\Users\Alex\Documents\GitHubextern\DSP_VeritcalAssemblers\bin\Release\net48\AssemblerVerticalConstruction.dll
+C:\Users\Alex\Documents\GitHubextern\DSP_VeritcalAssemblers\bin\Release\net48\AssemblerVerticalConstruction.pdb
+C:\Users\Alex\Documents\GitHubextern\DSP_VeritcalAssemblers\bin\Release\net48\System.Numerics.Vectors.dll
+C:\Users\Alex\Documents\GitHubextern\DSP_VeritcalAssemblers\obj\Release\net48\AssemblerVerticalConstruction.csproj.AssemblyReference.cache
+C:\Users\Alex\Documents\GitHubextern\DSP_VeritcalAssemblers\obj\Release\net48\AssemblerVerticalConstruction.csproj.SuggestedBindingRedirects.cache
+C:\Users\Alex\Documents\GitHubextern\DSP_VeritcalAssemblers\obj\Release\net48\AssemblerVerticalConstruction.dll.config
+C:\Users\Alex\Documents\GitHubextern\DSP_VeritcalAssemblers\obj\Release\net48\AssemblerVerticalConstruction.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Alex\Documents\GitHubextern\DSP_VeritcalAssemblers\obj\Release\net48\AssemblerVerticalConstruction.AssemblyInfoInputs.cache
+C:\Users\Alex\Documents\GitHubextern\DSP_VeritcalAssemblers\obj\Release\net48\AssemblerVerticalConstruction.AssemblyInfo.cs
+C:\Users\Alex\Documents\GitHubextern\DSP_VeritcalAssemblers\obj\Release\net48\AssemblerVerticalConstruction.csproj.CoreCompileInputs.cache
+C:\Users\Alex\Documents\GitHubextern\DSP_VeritcalAssemblers\obj\Release\net48\AssemblerVerticalConstruction.csproj.CopyComplete
+C:\Users\Alex\Documents\GitHubextern\DSP_VeritcalAssemblers\obj\Release\net48\AssemblerVerticalConstruction.dll
+C:\Users\Alex\Documents\GitHubextern\DSP_VeritcalAssemblers\obj\Release\net48\AssemblerVerticalConstruction.pdb

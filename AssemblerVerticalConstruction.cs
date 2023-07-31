@@ -82,6 +82,7 @@ namespace AssemblerVerticalConstruction
 
         public static void RecalcIDs()
         {
+            assemblerComponentEx.assemblerStacks = new();
             for (int i = 0; i < GameMain.data.factories.Length; i++)
             {
                 if (GameMain.data.factories[i] == null)
@@ -97,62 +98,15 @@ namespace AssemblerVerticalConstruction
                 {
                     assemblerComponentEx.assemblerStacks[i] = new();
                 } 
-/*                 if (assemblerComponentEx.assemblerStackMembers.Length < i)
-                {
-
-                } */
                 var assemblerCapacity = Traverse.Create(_this).Field("assemblerCapacity").GetValue<int>();
                 for (int j = 1; j < assemblerCapacity; j++)
                 {
-                    var assemblerId = j;
-                    int entityId = _this.assemblerPool[assemblerId].entityId;
-                    if (entityId == 0)
-                    {
-                        continue;
-                    }
-                    int num = entityId;
-                    int num2 = 0;
-                    do
-                    {
-                        bool flag;
-                        int num3;
-                        int num4;
-                        int num5 = num;
-                        int upperEntity = 0;
-                        _this.factory.ReadObjectConn(num, 15, out flag, out num3, out num4);
-			            if (flag && num3 != 0 && num4 == 14)
-			            {
-				            upperEntity = num3;
-			            }
-                        _this.factory.ReadObjectConn(num5, 14, out flag, out num3, out num4); 
-
-                        if (flag && num3 != 0 && num4 == 15 && upperEntity != 0) //check if assembler is the lowest one of a stack by checking bottom and top connections
-                        {
-                            assemblerComponentEx.assemblerStacks[i][assemblerId] = new();
-                            assemblerComponentEx.assemblerStacks[i][assemblerId].Add(_this.factory.entityPool[upperEntity].assemblerId);
-                            assemblerComponentEx.assemblerStackMembers[i][_this.factory.entityPool[upperEntity].assemblerId] = assemblerId;
-                           // assemblerComponentEx.SaveRootIdSignType(_this, j, _this.factory.entitySignPool[_this.assemblerPool[j].entityId].signType);
-                            assemblerComponentEx.SyncAssemblerFunctions(_this, j);
-                            break;
-                        }
-                        num = upperEntity; //nextAssemblerId
-                        if (num > 0)
-                        {
-                          
-                            int assemblerId3 = _this.factory.entityPool[num5].assemblerId;
-                            int assemblerId2 = _this.factory.entityPool[num].assemblerId;
-                            if (assemblerId2 > 0 && _this.assemblerPool[assemblerId2].id == assemblerId2)
-                            {
-                                assemblerComponentEx.addAssemblerToStack(GameMain.data.factories[i], assemblerId3, num);
-                                assemblerComponentEx.SyncAssemblerFunctions(_this, assemblerId2);
-                            }
-                        }
-                        if (num2 > 256)
-                        {
-                            break;
-                        }
-                    }
-                    while (num != 0);
+                    assemblerComponentEx.traceStack(GameMain.data.factories[i].factorySystem, j);
+                }
+                List<int> keysList = new List<int>(AssemblerVerticalConstruction.assemblerComponentEx.assemblerStacks[i].Keys);
+                foreach (var rootAssembler in keysList)
+                {
+                    assemblerComponentEx.traceStackUpAndBuild(GameMain.data.factories[i].factorySystem, rootAssembler);
                 }
             }
         }
@@ -194,7 +148,7 @@ namespace AssemblerVerticalConstruction
                 UnityEngine.Vector3 lapJoint = UnityEngine.Vector3.zero;
                 if (__instance.ID == 2303 || __instance.ID == 2304 || __instance.ID == 2305)
                 {
-                    lapJoint = new UnityEngine.Vector3(0, 5.2f, 0);
+                    lapJoint = new UnityEngine.Vector3(0, 5.35f, 0);
                 }
 /*                 else if (__instance.ID == 2302)
                 {
@@ -255,6 +209,7 @@ namespace AssemblerVerticalConstruction
             if (assemblerId > 0 && _this.entityPool[insertTarget].assemblerId > 0)
             {
                 assemblerComponentEx.addAssemblerToStack(__instance, assemblerId, insertTarget);
+                //assemblerComponentEx.traceStack(__instance.factorySystem,assemblerId);
             }
              if (assemblerComponentEx.assemblerStackMembers[__instance.factorySystem.factory.index][__instance.entityPool[insertTarget].assemblerId] != 0)
             {
@@ -519,7 +474,7 @@ public static bool FactorySystemGameTickPatch(FactorySystem _this, int j)
         [HarmonyPostfix, HarmonyPatch(typeof(FactorySystem), nameof(FactorySystem.Import))]
         public static void FactorySystemImportPostfixPatch(FactorySystem __instance)
         {
-            AssemblerVerticalConstruction.RecalcIDs();
+            RecalcIDs();
             for (int k = 1; k < __instance.inserterCursor; k++)
 		    {
 

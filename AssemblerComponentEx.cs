@@ -64,6 +64,69 @@ namespace AssemblerVerticalConstruction
             }
         }
             
+        public void traceStackUpAndBuild(FactorySystem factorySystem, int assemblerId)
+        {
+            int entityId = factorySystem.assemblerPool[assemblerId].entityId;
+            while(true)
+            {
+                int assemberId = factorySystem.factory.entityPool[entityId].assemblerId;
+                int upperEntityId = 0;
+                int num3;
+                int num4;
+                bool flag;
+                factorySystem.factory.ReadObjectConn(entityId, 15, out flag, out num3, out num4);
+                if (num3 != 0 && num4 == 14)
+                {
+                    upperEntityId = num3;
+                }
+                int upperAssemblerId = factorySystem.factory.entityPool[upperEntityId].assemblerId;
+                if (upperAssemblerId != 0)
+                {                   
+                    addAssemblerToStack(factorySystem.factory ,assemberId, upperEntityId);
+                    SyncAssemblerFunctions(factorySystem, assemberId);
+                    entityId = upperEntityId;
+                }
+                else
+                {
+                    break;
+                }
+            }
+        }
+
+        public void traceStack(FactorySystem factorySystem, int assemblerId)
+        {
+            int entityId = factorySystem.assemblerPool[assemblerId].entityId;
+            int index = factorySystem.factory.index;
+            do
+            {
+                bool flag;
+                int num3;
+                int num4;
+                int upperEntityId = 0;
+                int lowerEntityId = 0;
+                int upperAssemblerId = 0;
+                factorySystem.factory.ReadObjectConn(entityId, 15, out flag, out num3, out num4);
+                if (num3 != 0 && num4 == 14)
+                {
+                    upperEntityId = num3;
+                }
+                factorySystem.factory.ReadObjectConn(entityId, 14, out flag, out num3, out num4); 
+                if (num3 != 0 && num4 == 15)
+                {
+                    lowerEntityId = num3;
+                }
+                upperAssemblerId = factorySystem.factory.entityPool[upperEntityId].assemblerId;
+
+                if (lowerEntityId == 0 && upperAssemblerId != 0) //check if assembler is the lowest one of a stack by checking bottom and top connections
+                {
+                    traceStackUpAndBuild(factorySystem, factorySystem.factory.entityPool[entityId].assemblerId);
+                    break;
+                }
+                entityId = upperEntityId;
+            }
+            while (entityId != 0);
+        }
+
         public void addAssemblerToStack(PlanetFactory __instance, int assemblerId, int nextEntityId)
         {
             var index = __instance.factorySystem.factory.index;
@@ -83,38 +146,41 @@ namespace AssemblerVerticalConstruction
                     //    this.assemblerStacks[index].Remove(assemblerStackMembers[index][assemblerId]);
                   //  }                   
                     return;
-                }
-                else
-
+                } 
+            
+                var nextAssemblerId = __instance.entityPool[nextEntityId].assemblerId;       
+                bool flag1 = true;
+                if (!this.assemblerStacks.ContainsKey(index))
                 {
-                    var nextAssemblerId = __instance.entityPool[nextEntityId].assemblerId;       
-                    bool flag1 = true;
-                    if (!this.assemblerStacks.ContainsKey(index))
-                    {
-                        this.assemblerStacks[index] = new(); 
-                        this.assemblerStacks[index][assemblerId] = new();
-                    }
-
-                    foreach (var k in this.assemblerStacks[index].Keys)
-                    {
-                        if (this.assemblerStacks[index][k].Contains(assemblerId) && nextAssemblerId != 0)
-                        {
-                            this.assemblerStacks[index][k].Add(nextAssemblerId);
-
-                            this.assemblerStackMembers[index][nextAssemblerId] = k;
-                            flag1 = false;
-                            this.SyncAssemblerFunctions(__instance.factorySystem, assemblerId);
-                            break;
-                        }
-                    }
-                    if (flag1)
-                    {
-                        this.assemblerStacks[index][assemblerId] = new HashSet<int>();
-                        this.assemblerStacks[index][assemblerId].Add(nextAssemblerId);
-                        this.assemblerStackMembers[index][nextAssemblerId] = assemblerId;                 
-                        this.SyncAssemblerFunctions(__instance.factorySystem, assemblerId);
-                    }                   
+                    this.assemblerStacks[index] = new(); 
+                    this.assemblerStacks[index][assemblerId] = new();
                 }
+
+                foreach (var k in this.assemblerStacks[index].Keys)
+                {
+                    if (this.assemblerStacks[index][k].Contains(assemblerId) && nextAssemblerId != 0)
+                    {
+                        if (!this.assemblerStacks[index][k].Contains(nextAssemblerId))
+                        {    
+                            this.assemblerStacks[index][k].Add(nextAssemblerId);
+                        }
+                        if (this.assemblerStackMembers[index][nextAssemblerId] != k)
+                        {
+                            this.assemblerStackMembers[index][nextAssemblerId] = k;
+                        }
+                        flag1 = false;
+                        this.SyncAssemblerFunctions(__instance.factorySystem, assemblerId);
+                        break;
+                    }
+                }
+                if (flag1)
+                {
+                    this.assemblerStacks[index][assemblerId] = new HashSet<int>();
+                    this.assemblerStacks[index][assemblerId].Add(nextAssemblerId);
+                    this.assemblerStackMembers[index][nextAssemblerId] = assemblerId;                 
+                    this.SyncAssemblerFunctions(__instance.factorySystem, assemblerId);
+                }                   
+            
             }
         }
 
@@ -172,6 +238,7 @@ namespace AssemblerVerticalConstruction
                     factorySystem.factory.powerSystem.consumerPool[factorySystem.factory.entityPool[StackAssemblerEntityId].powerConId].idleEnergyPerTick = 0;                   
                     factorySystem.factory.entityPool[StackAssemblerEntityId].powerConId = 0;
                     factorySystem.factory.powerSystem.RemoveConsumerComponent(factorySystem.factory.powerSystem.consumerPool[factorySystem.assemblerPool[stackAssemblerId].pcId].id);
+                    
                 }
             }
         }

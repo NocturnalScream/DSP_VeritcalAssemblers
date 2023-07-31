@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "bpqd5V1qDggIKgc9oVQu7EBLaivbUV6Xx5OgJtnCHZuF+EcyUcndw4ghIAnynsPJX49/qPRqZmFb/PnZFnYqFA==",
+  "dgSpecHash": "W03kdQS1GHu15faCVEynxbTTr+6z+T1jLv67C9irfNmrznbq9CkGTHLt82nI/4wwotpyr/KG6WG8JW9QubXQsw==",
   "success": true,
-  "projectFilePath": "C:\\Users\\Alex\\Documents\\DSPmodScaffold\\AssemblerVerticalConstruction.csproj",
+  "projectFilePath": "C:\\Users\\Alex\\Documents\\GitHubextern\\DSP_VeritcalAssemblers\\AssemblerVerticalConstruction.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Alex\\.nuget\\packages\\bepinex.baselib\\5.4.16\\bepinex.baselib.5.4.16.nupkg.sha512",
     "C:\\Users\\Alex\\.nuget\\packages\\bepinex.core\\5.4.16\\bepinex.core.5.4.16.nupkg.sha512",

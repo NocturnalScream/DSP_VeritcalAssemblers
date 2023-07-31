@@ -603,17 +603,17 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Alex\\Documents\\DSPmodScaffold\\AssemblerVerticalConstruction.csproj",
+      "projectUniqueName": "C:\\Users\\Alex\\Documents\\GitHubextern\\DSP_VeritcalAssemblers\\AssemblerVerticalConstruction.csproj",
       "projectName": "AssemblerVerticalConstruction",
-      "projectPath": "C:\\Users\\Alex\\Documents\\DSPmodScaffold\\AssemblerVerticalConstruction.csproj",
+      "projectPath": "C:\\Users\\Alex\\Documents\\GitHubextern\\DSP_VeritcalAssemblers\\AssemblerVerticalConstruction.csproj",
       "packagesPath": "C:\\Users\\Alex\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Alex\\Documents\\DSPmodScaffold\\obj\\",
+      "outputPath": "C:\\Users\\Alex\\Documents\\GitHubextern\\DSP_VeritcalAssemblers\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
       ],
       "configFilePaths": [
-        "C:\\Users\\Alex\\Documents\\DSPmodScaffold\\NuGet.Config",
+        "C:\\Users\\Alex\\Documents\\GitHubextern\\DSP_VeritcalAssemblers\\NuGet.Config",
         "C:\\Users\\Alex\\NuGet.Config",
         "C:\\Users\\Alex\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
