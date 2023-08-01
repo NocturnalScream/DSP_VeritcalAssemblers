@@ -132,7 +132,7 @@ namespace AssemblerVerticalConstruction
             int entityId = factorySystem.assemblerPool[assemblerId].entityId;
             while(true)
             {
-                int assemberId = factorySystem.factory.entityPool[entityId].assemblerId;
+                assemblerId = factorySystem.factory.entityPool[entityId].assemblerId;
                 int upperEntityId = 0;
                 int num3;
                 int num4;
@@ -154,15 +154,16 @@ namespace AssemblerVerticalConstruction
                // upperAssemblerId = factorySystem.factory.entityPool[upperEntityId].assemblerId;
                 if (upperAssemblerId != 0)
                 {                   
-                    addAssemblerToStack(factorySystem.factory ,assemberId, upperEntityId);
-                    SyncAssemblerFunctions(factorySystem, assemberId);
+                    addAssemblerToStack(factorySystem.factory ,assemblerId, upperEntityId);
                     entityId = upperEntityId;
                 }
                 else
                 {
+                    SyncAssemblerFunctions(factorySystem, assemblerId);
                     break;
                 }
             }
+            //SyncAssemblerFunctions(factorySystem, assemblerId);
         }
 //upperEntityId > 0 && 
         public void traceStack(FactorySystem factorySystem, int assemblerId)
@@ -205,6 +206,70 @@ namespace AssemblerVerticalConstruction
             }
             while (entityId != 0);
         }
+
+        public void traceStackDownAndRebuild(FactorySystem factorySystem, int assemblerId)
+        {
+            int entityId = factorySystem.assemblerPool[assemblerId].entityId;
+            int index = factorySystem.factory.index;
+            
+            do
+            {
+                bool flag;
+                int num3;
+                int num4;
+                int upperEntityId = 0;
+                int lowerEntityId = 0;
+                int upperAssemblerId = 0;
+                int assemblerId2 = 0;
+                factorySystem.factory.ReadObjectConn(entityId, 15, out flag, out num3, out num4);
+                if (num3 != 0 && num4 == 14)
+                {
+                    upperEntityId = num3;
+                }
+                factorySystem.factory.ReadObjectConn(entityId, 14, out flag, out num3, out num4); 
+                if (num3 != 0 && num4 == 15)
+                {
+                    lowerEntityId = num3;
+                }   
+                if (upperEntityId >= 0 && upperEntityId < factorySystem.factory.entityPool.Length)
+                {
+                    upperAssemblerId = factorySystem.factory.entityPool[upperEntityId].assemblerId;
+                }
+                else
+                {
+                    entityId = lowerEntityId;
+                    continue;    
+                }     
+                //upperAssemblerId = factorySystem.factory.entityPool[upperEntityId].assemblerId;
+                if (lowerEntityId == 0 && upperAssemblerId != 0 && entityId >= 0) //check if assembler is the lowest one of a stack by checking bottom and top connections
+                {
+                    traceStackUpAndBuild(factorySystem, factorySystem.factory.entityPool[entityId].assemblerId);
+                    return;
+                }
+                if (entityId >= 0 && entityId < factorySystem.factory.entityPool.Length)
+                {
+                    upperAssemblerId = factorySystem.factory.entityPool[upperEntityId].assemblerId;
+                }
+                if (entityId >= 0)
+                {
+                    assemblerId2 = factorySystem.factory.entityPool[entityId].assemblerId;
+                } 
+                if (lowerEntityId != 0 && this.assemblerStacks[index].ContainsKey(assemblerId2))
+                {
+                    this.assemblerStacks[index].Remove(assemblerId2);
+                }
+                if (lowerEntityId != 0 && this.assemblerStackMembers[index][assemblerId2] != 0)
+                {
+                    this.assemblerStackMembers[index][assemblerId2] = 0;
+                }
+                if (lowerEntityId != 0 && this.assemblerRootSignTypes[index][assemblerId2] != 0)
+                {
+                    this.assemblerRootSignTypes[index][assemblerId2] = 0;
+                }
+                entityId = lowerEntityId;
+            }
+            while (entityId != 0);
+        }        
 
         public void addAssemblerToStack(PlanetFactory __instance, int assemblerId, int nextEntityId)
         {
@@ -315,8 +380,8 @@ namespace AssemblerVerticalConstruction
                     factorySystem.factory.entitySignPool[StackAssemblerEntityId].signType = assemblerRootSignTypes[factorySystem.factory.index][rootAssemblerId];
                     factorySystem.factory.powerSystem.consumerPool[factorySystem.factory.entityPool[StackAssemblerEntityId].powerConId].workEnergyPerTick = 0;
                     factorySystem.factory.powerSystem.consumerPool[factorySystem.factory.entityPool[StackAssemblerEntityId].powerConId].idleEnergyPerTick = 0;                   
-                    factorySystem.factory.entityPool[StackAssemblerEntityId].powerConId = 0;
-                    factorySystem.factory.powerSystem.RemoveConsumerComponent(factorySystem.factory.powerSystem.consumerPool[factorySystem.assemblerPool[stackAssemblerId].pcId].id);
+                    //factorySystem.factory.entityPool[StackAssemblerEntityId].powerConId = 0;
+                    //factorySystem.factory.powerSystem.RemoveConsumerComponent(factorySystem.factory.powerSystem.consumerPool[factorySystem.assemblerPool[stackAssemblerId].pcId].id);
                     
                 }
             }

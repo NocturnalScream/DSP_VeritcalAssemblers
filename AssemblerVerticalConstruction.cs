@@ -178,7 +178,8 @@ namespace AssemblerVerticalConstruction
             int assemblerId = _this.entityPool[entityId].assemblerId;
             if (assemblerId > 0 && _this.entityPool[insertTarget].assemblerId > 0)
             {
-                assemblerComponentEx.RecalcIds(__instance.factorySystem); 
+                assemblerComponentEx.traceStackDownAndRebuild(__instance.factorySystem, insertTarget);
+                //assemblerComponentEx.RecalcIds(__instance.factorySystem); 
                 //assemblerComponentEx.addAssemblerToStack(__instance, assemblerId, insertTarget);
                 //assemblerComponentEx.traceStack(__instance.factorySystem,insertTarget);
             }
@@ -212,7 +213,8 @@ namespace AssemblerVerticalConstruction
                 int assemblerId2 = _this.entityPool[removingEntityId].assemblerId;
                 if (assemblerId > 0 && assemblerId2 > 0)
                 {
-                  assemblerComponentEx.RecalcIds(__instance.factorySystem);                  
+                  assemblerComponentEx.traceStackDownAndRebuild(__instance.factorySystem, assemblerId2);
+                  //assemblerComponentEx.RecalcIds(__instance.factorySystem);                  
                   //  var rootId = assemblerComponentEx.assemblerStackMembers[__instance.index][assemblerId2];
                   //  assemblerComponentEx.addAssemblerToStack(__instance, assemblerId2, 0);
                   //  assemblerComponentEx.SyncAssemblerFunctions(__instance.factorySystem, rootId);
