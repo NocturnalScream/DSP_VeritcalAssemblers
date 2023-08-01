@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-
+using HarmonyLib;
 namespace AssemblerVerticalConstruction
 {
     public class AssemblerComponentEx
@@ -40,6 +40,69 @@ namespace AssemblerVerticalConstruction
            return this.assemblerStackMembers[index][assemblerId];
         } 
 
+        public void RecalcIdsOnLoad()
+        {
+            assemblerStacks = new();
+            for (int i = 0; i < GameMain.data.factories.Length; i++)
+            {
+                if (GameMain.data.factories[i] == null)
+                {
+                    continue;
+                }
+                var _this = GameMain.data.factories[i].factorySystem;
+                if (_this == null)
+                {
+                    continue;
+                }
+                if (!assemblerStacks.ContainsKey(i))
+                {
+                    assemblerStacks[i] = new();
+                } 
+                var assemblerCapacity = Traverse.Create(_this).Field("assemblerCapacity").GetValue<int>();
+                for (int j = 1; j < assemblerCapacity; j++)
+                {
+                    traceStack(GameMain.data.factories[i].factorySystem, j);
+                }
+                List<int> keysList = new List<int>(AssemblerVerticalConstruction.assemblerComponentEx.assemblerStacks[i].Keys);
+                foreach (var rootAssembler in keysList)
+                {
+                    traceStackUpAndBuild(GameMain.data.factories[i].factorySystem, rootAssembler);
+                }
+            }
+        }     
+
+        public void RecalcIds(FactorySystem factorySystem)
+        {
+            var index = factorySystem.factory.index;
+            if (GameMain.data.factories[index] == null || factorySystem == null)
+                {
+                    return;
+                }           
+            if (!this.assemblerStacks.ContainsKey(index))
+            {
+                assemblerStacks[index].Clear();
+            }
+            if (this.assemblerStackMembers[index] != null)
+            {
+                this.assemblerStackMembers[index].Initialize();
+            }
+            if (this.assemblerRootSignTypes[index] != null)
+            {
+                this.assemblerRootSignTypes[index].Initialize();
+            }
+
+            var assemblerCapacity = Traverse.Create(factorySystem).Field("assemblerCapacity").GetValue<int>();
+            for (int j = 1; j < assemblerCapacity; j++)
+            {
+                traceStack(GameMain.data.factories[index].factorySystem, j);
+            }
+            List<int> keysList = new List<int>(AssemblerVerticalConstruction.assemblerComponentEx.assemblerStacks[index].Keys);
+            foreach (var rootAssembler in keysList)
+            {
+                traceStackUpAndBuild(GameMain.data.factories[index].factorySystem, rootAssembler);
+            }
+        }
+
 
         public void SaveRootIdSignType(FactorySystem factorySystem, int assemblerId, uint signType)
         {
@@ -73,13 +136,22 @@ namespace AssemblerVerticalConstruction
                 int upperEntityId = 0;
                 int num3;
                 int num4;
+                int upperAssemblerId = 0;
                 bool flag;
                 factorySystem.factory.ReadObjectConn(entityId, 15, out flag, out num3, out num4);
                 if (num3 != 0 && num4 == 14)
                 {
                     upperEntityId = num3;
                 }
-                int upperAssemblerId = factorySystem.factory.entityPool[upperEntityId].assemblerId;
+                if (upperEntityId >= 0 && upperEntityId < factorySystem.factory.entityPool.Length)
+                {
+                    upperAssemblerId = factorySystem.factory.entityPool[upperEntityId].assemblerId;
+                }
+                else 
+                {
+                    break;
+                }    
+               // upperAssemblerId = factorySystem.factory.entityPool[upperEntityId].assemblerId;
                 if (upperAssemblerId != 0)
                 {                   
                     addAssemblerToStack(factorySystem.factory ,assemberId, upperEntityId);
@@ -92,7 +164,7 @@ namespace AssemblerVerticalConstruction
                 }
             }
         }
-
+//upperEntityId > 0 && 
         public void traceStack(FactorySystem factorySystem, int assemblerId)
         {
             int entityId = factorySystem.assemblerPool[assemblerId].entityId;
@@ -114,9 +186,16 @@ namespace AssemblerVerticalConstruction
                 if (num3 != 0 && num4 == 15)
                 {
                     lowerEntityId = num3;
-                }
-                upperAssemblerId = factorySystem.factory.entityPool[upperEntityId].assemblerId;
-
+                }   
+                     if (upperEntityId >= 0 && upperEntityId < factorySystem.factory.entityPool.Length)
+                    {
+                        upperAssemblerId = factorySystem.factory.entityPool[upperEntityId].assemblerId;
+                    }
+                else
+                {
+                    break;    
+                }     
+                //upperAssemblerId = factorySystem.factory.entityPool[upperEntityId].assemblerId;
                 if (lowerEntityId == 0 && upperAssemblerId != 0) //check if assembler is the lowest one of a stack by checking bottom and top connections
                 {
                     traceStackUpAndBuild(factorySystem, factorySystem.factory.entityPool[entityId].assemblerId);
@@ -141,10 +220,10 @@ namespace AssemblerVerticalConstruction
                 {
                     this.assemblerStacks[index][assemblerStackMembers[index][assemblerId]].Remove(assemblerId);
                     this.assemblerStackMembers[__instance.index][assemblerId] = 0;
-                  //  if (this.assemblerStacks[index][assemblerStackMembers[index][assemblerId]].Count == 0)
+                 //   if (this.assemblerStacks[index][assemblerStackMembers[index][assemblerId]].Count == 0)
                  //   {
-                    //    this.assemblerStacks[index].Remove(assemblerStackMembers[index][assemblerId]);
-                  //  }                   
+                 //       this.assemblerStacks[index].Remove(assemblerStackMembers[index][assemblerId]);
+                 //   }                   
                     return;
                 } 
             

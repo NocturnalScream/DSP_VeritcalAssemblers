@@ -1,14 +1,13 @@
 ﻿using System;
 using BepInEx;
-using UnityEngine;
+
 using BepInEx.Configuration;
 using HarmonyLib;
-using System.IO;
+
 using System.Collections.Generic;
 using System.Reflection.Emit;
-using System.Numerics;
 
-
+using System.Linq;
 
 
 namespace AssemblerVerticalConstruction
@@ -80,36 +79,7 @@ namespace AssemblerVerticalConstruction
         }
         
 
-        public static void RecalcIDs()
-        {
-            assemblerComponentEx.assemblerStacks = new();
-            for (int i = 0; i < GameMain.data.factories.Length; i++)
-            {
-                if (GameMain.data.factories[i] == null)
-                {
-                    continue;
-                }
-                var _this = GameMain.data.factories[i].factorySystem;
-                if (_this == null)
-                {
-                    continue;
-                }
-                if (!assemblerComponentEx.assemblerStacks.ContainsKey(i))
-                {
-                    assemblerComponentEx.assemblerStacks[i] = new();
-                } 
-                var assemblerCapacity = Traverse.Create(_this).Field("assemblerCapacity").GetValue<int>();
-                for (int j = 1; j < assemblerCapacity; j++)
-                {
-                    assemblerComponentEx.traceStack(GameMain.data.factories[i].factorySystem, j);
-                }
-                List<int> keysList = new List<int>(AssemblerVerticalConstruction.assemblerComponentEx.assemblerStacks[i].Keys);
-                foreach (var rootAssembler in keysList)
-                {
-                    assemblerComponentEx.traceStackUpAndBuild(GameMain.data.factories[i].factorySystem, rootAssembler);
-                }
-            }
-        }
+        
 
         [HarmonyPatch(typeof(VFPreload), nameof(VFPreload.InvokeOnLoadWorkEnded))]
         [HarmonyPostfix]
@@ -208,8 +178,9 @@ namespace AssemblerVerticalConstruction
             int assemblerId = _this.entityPool[entityId].assemblerId;
             if (assemblerId > 0 && _this.entityPool[insertTarget].assemblerId > 0)
             {
-                assemblerComponentEx.addAssemblerToStack(__instance, assemblerId, insertTarget);
-                //assemblerComponentEx.traceStack(__instance.factorySystem,assemblerId);
+                assemblerComponentEx.RecalcIds(__instance.factorySystem); 
+                //assemblerComponentEx.addAssemblerToStack(__instance, assemblerId, insertTarget);
+                //assemblerComponentEx.traceStack(__instance.factorySystem,insertTarget);
             }
              if (assemblerComponentEx.assemblerStackMembers[__instance.factorySystem.factory.index][__instance.entityPool[insertTarget].assemblerId] != 0)
             {
@@ -241,9 +212,10 @@ namespace AssemblerVerticalConstruction
                 int assemblerId2 = _this.entityPool[removingEntityId].assemblerId;
                 if (assemblerId > 0 && assemblerId2 > 0)
                 {
-                    var rootId = assemblerComponentEx.assemblerStackMembers[__instance.index][assemblerId2];
-                    assemblerComponentEx.addAssemblerToStack(__instance, assemblerId2, 0);
-                    assemblerComponentEx.SyncAssemblerFunctions(__instance.factorySystem, rootId);
+                  assemblerComponentEx.RecalcIds(__instance.factorySystem);                  
+                  //  var rootId = assemblerComponentEx.assemblerStackMembers[__instance.index][assemblerId2];
+                  //  assemblerComponentEx.addAssemblerToStack(__instance, assemblerId2, 0);
+                  //  assemblerComponentEx.SyncAssemblerFunctions(__instance.factorySystem, rootId);
                 }
             }
             return true;
@@ -454,15 +426,53 @@ public static bool FactorySystemGameTickPatch(FactorySystem _this, int j)
             }
         }
 
-/*         [HarmonyTranspiler] 
+        [HarmonyTranspiler] 
         [HarmonyPatch(typeof(BuildTool_Click), nameof(BuildTool_Click.CheckBuildConditions))]
         [HarmonyPatch(typeof(BuildTool_BlueprintPaste), nameof(BuildTool_BlueprintPaste.CheckBuildConditions))]
-        public static void CheckBuildConditionsPatch(BuildTool __instance)
+        public static IEnumerable<CodeInstruction> CheckBuildConditionsPatch(IEnumerable<CodeInstruction> instructions)
         {
-            GameHistoryData history = __instance.ac tionBuild.history;
-            BuildPreview buildPreview = __instance.buildPreviews[1];
-            buildPreview.desc.isAssembler
-        } */  // needed later to check for Illegal blueprints due to not researched stack technology - not yet implemented
+            var codes = new List<CodeInstruction>(instructions);
+
+            // Find the index of the line we want to match
+            int index = codes.FindIndex(ins => ins.opcode == OpCodes.Ldfld && ins.operand.ToString().Contains("desc.isSplitter"));
+
+            if (index >= 0)
+            {
+                // Insert the new condition after the matched line
+                codes.Insert(index + 1, new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(BuildPreview), nameof(PrefabDesc.isAssembler))));
+                codes.Insert(index + 2, new CodeInstruction(OpCodes.Or));
+            }
+
+            return codes.AsEnumerable();
+        }
+      
+      
+      
+       /*  static IEnumerable<CodeInstruction> CheckBuildConditionsPatch(IEnumerable<CodeInstruction> instructions)
+        {
+            List<CodeInstruction> instructionList = new List<CodeInstruction>(instructions);
+
+            for (int i = 0; i < instructionList.Count; i++)
+            {
+                CodeInstruction instruction = instructionList[i];
+                if (instruction.opcode == OpCodes.Brtrue
+                    && instruction.operand is Label label
+                    && instructionList[i + 1].opcode == OpCodes.Ldarg_0
+                    && instructionList[i + 2].opcode == OpCodes.Ldfld
+                    && instructionList[i + 2].operand is FieldInfo fieldInfo
+                    && fieldInfo.Name == "desc"
+                    && instructionList[i + 3].opcode == OpCodes.Ldfld
+                    && instructionList[i + 3].operand is FieldInfo nestedFieldInfo
+                    && nestedFieldInfo.Name == "isSplitter")
+                {
+                    instructionList[i + 3] = new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(BuildPreview), nameof(PrefabDesc.isAssembler)));
+                    instructionList.Insert(i + 4, new CodeInstruction(OpCodes.Brtrue, label));
+                    break;
+                }
+            }
+            return instructionList;
+        } */
+     // needed later to check for Illegal blueprints due to not researched stack technology - not yet implemented
 
  /*        [HarmonyPrefix, HarmonyPatch(typeof(GameHistoryData), "get_buildMaxHeight")]
         public static bool get_buildMaxHeightPatch(GameHistoryData __instance, ref float __result)
@@ -471,10 +481,11 @@ public static bool FactorySystemGameTickPatch(FactorySystem _this, int j)
         return false;
         } */ //needed if level height needs to be adjusted
 
+        
         [HarmonyPostfix, HarmonyPatch(typeof(FactorySystem), nameof(FactorySystem.Import))]
         public static void FactorySystemImportPostfixPatch(FactorySystem __instance)
         {
-            RecalcIDs();
+            assemblerComponentEx.RecalcIdsOnLoad();
             for (int k = 1; k < __instance.inserterCursor; k++)
 		    {
 
